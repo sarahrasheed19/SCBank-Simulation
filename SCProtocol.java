@@ -17,8 +17,10 @@ public class SCProtocol {
     private static final int CHECKINGPW = 3; //machine checking password
     private static final int WITHDRAW = 8; //withdraw mode
     private static final int DEPOSIT = 9; //for deposits 
-    private static final int SIGNOFF = -1; //ending this 
-    private Account acct = new Account();    
+    private static final int SIGNOFF = -1; //ending this
+    private String[] username = {"admin", "client2"};
+    private String[] password = {"1z2y3x4w", "pw123pw"};
+    private Account acct = new Account(username[0]); //admin account    
 
     private int STATE = 0; //we start at DISCONNECTED
 
@@ -26,8 +28,6 @@ public class SCProtocol {
     //first input processing if it is a username or password
     //parameter is a String
     public String processInput(String signon) {
-        String[] username = {"client1","client2","client3"}; //accepted clients
-        String password = "1z2y3x4w";
         String output = null;
 
         if(STATE == DISCONNECTED){ //prompt user input username
@@ -35,21 +35,23 @@ public class SCProtocol {
             STATE = PROCESSING;
         }
         if(STATE == PROCESSING){
-            for(int i = 0; i<username.length ; i++){
-                if(signon.compareTo(username[i])){
-                    output = "Welcome back " + signon + ". Please enter your password.";
-                    STATE = CHECKINGPW;
-                } else {
-                    output = "Invalid username! Try again.";
-                    STATE = DISCONNECTED;
-                }
+            if(signon.compareTo(acct.getUsername())){
+                output = "Welcome back " + signon + ". Please enter your password.";
+                STATE = CHECKINGPW;
+            } else {
+                output = "Invalid username! Try again.";
+                STATE = DISCONNECTED;             
             }
         }
         if(STATE == CHECKINGPW){
-            if(signon.compareTo(password)){
-                output = "Welcome. What can we help you with today? (0) See Acct Number"+ 
-                        "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
-                STATE = CONNECTED;
+            for(int i = 0; i<username.length; i++){
+                if(username[i].compareTo(acct.getUsername())){
+                    if(signon.compareTo(password[i])){
+                        output = "Welcome. What can we help you with today? (0) See Acct Number"+ 
+                                "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
+                        STATE = CONNECTED;
+                    }
+                }
             }
         }
  
@@ -94,9 +96,9 @@ public class SCProtocol {
         if(STATE == WITHDRAW){
             //check that the withdraw amount is not more than the account balance
             if(option <= balance){
-                int remBal = transaction(-1*option); // send negative value to method that amends balance
-                output = "Your remaining balance now is: " + remBal + 
-                         ". Would you like to (2) Withdraw Money? (3) Deposit Money? (4) Sign Out?"
+                acct.withdraw(option);
+                output = "Your remaining balance now is: " + acct.getBalance() + 
+                         ". Would you like to (2) Withdraw More Money? (3) Deposit Money? (4) Sign Out?";
                 STATE = CONNECTED;
             }
             //should we just have the account be in protocol? 
@@ -109,8 +111,10 @@ public class SCProtocol {
                 
         if(STATE == DEPOSIT){
             //check that the withdraw amount is not more than the account balance
-            if(option <= balance){
-                transaction(-1*option); // send negative value to method that amends balance
+            if(option != null){
+                acct.deposit(option);// send negative value to method that amends balance
+                output = "Your balance is now: " + acct.getBalance() + 
+                ". Would you like to (2) Withdraw Money? (3) Deposit More Money? (4) Sign Out?";
             }
             //should we just have the account be in protocol? 
             if(option == 4){
@@ -121,13 +125,5 @@ public class SCProtocol {
         }
               
 
-    }
-    public static int transaction(int diff){
-        int bal = acct.getBalance();
-
-        bal += diff;
-        acct.setBalance(bal);
-
-        return bal;
     }
 }
