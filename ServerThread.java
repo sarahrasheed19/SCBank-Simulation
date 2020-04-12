@@ -24,15 +24,21 @@ public class ServerThread extends Thread
         try (
             PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            ObjectOutputStream acctChannel = new ObjectOutputStream(sock.getOutputStream());
+            ObjectInputStream channelIn = new ObjectInputStream(sock.getInputStream());
+            ObjectOutputStream channelOut = new ObjectOutputStream(sock.getOutputStream());
+            
         ){
             String input, output;
+            Message inBank, outBank;
+            String name = "S&C Bank Inc.";
+            
             SCProtocol exchange = new SCProtocol();
             
             output = exchange.processInput("new");
-            out.println(output);
+            outBank = new Message(name,output);
             
-            while((input = in.readLine()) != null){
+            while((inBank = (Message)channelIn.readObject()) != null){
+                input = inBank.getMessage();
                 if (input.equals("4")){
                     System.out.println("Thank you for banking with Sarah and Carina Bank Incorporated!");
                     break;
@@ -40,18 +46,25 @@ public class ServerThread extends Thread
                 for (int i= 0; i<10; i++){
                     if (input.contains(String.valueOf(i))){
                         output = exchange.processInput(Float.parseFloat(input));
-                        out.println(output);
+                        outBank.setMessage(output);
+                        channelOut.writeObject(outBank);
+                        //out.println(output);
                     }
                     else {
                         output = exchange.processInput(input);
-                        out.println(output);
+                        outBank.setMessage(output);
+                        channelOut.writeObject(outBank);
+                        //out.println(output);
                     }
                 }
                 
             }
+            channelIn.close();
+            channelOut.close();
             sock.close();
 
         }catch (IOException e) {
+        } catch (ClassNotFoundException f){
         }
     } 
 }
