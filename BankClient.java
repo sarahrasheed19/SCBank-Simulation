@@ -35,7 +35,7 @@ public class BankClient implements Serializable
                 if(outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.")){
                   username = scan.nextLine();
                 }
-                else if(outMessage.getMessage.().equals("Welcome back " + username + ". Please enter your password.")){
+                else if(outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password.")){
                   String password = scan.nextLine();
                 }
 

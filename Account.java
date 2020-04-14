@@ -18,12 +18,12 @@ public class Account
     public int checkout = 0;
 
     private int tempNum = 1000;
-    private ArrayList<Integer> accountNumbers = new ArrayList<>();
+    private ArrayList<Integer> accountNumbers = new ArrayList<Integer>();
 
     public Account(String username){
         this.accountNumber = genAccountNumber();
         this.username = username;
-        this.balance = 1000.0;
+        this.balance = 1000;
         this.checkout = checkout;
     }
 
@@ -65,14 +65,15 @@ public class Account
         Random rand = new Random();
 
         int randNum = tempNum + rand.nextInt(1000);
-        accountNumbers.add(randNum);
-
+        
         for (int i = 0; i < accountNumbers.size(); i++){
             if (randNum == accountNumbers.get(i)){
                 randNum = Integer.parseInt(genAccountNumber());
                 accountNumbers.add(randNum);
             }
         }
+        
+        accountNumbers.add(randNum);
         return Integer.toString(randNum);
     }
 
