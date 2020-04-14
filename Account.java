@@ -86,13 +86,15 @@ public class Account
     }
 
     public boolean ifSignedIn(Account account){
+        boolean ifSignedIn = true;
+       
         if(account.getCheckOut() == 1){
-            return true;
+            ifSignedIn = true;
         }
         else if(account.getCheckOut() == 0){
-            return false;
+            ifSignedIn = false;
         }
         
-        return false;
+        return ifSignedIn;
     }
 }
