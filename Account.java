@@ -14,7 +14,7 @@ public class Account
 {
     public String accountNumber;
     public String username;
-    public float balance;
+    public double balance;
     public int checkout = 0;
 
     private int tempNum = 1000;
@@ -27,7 +27,7 @@ public class Account
         this.checkout = checkout;
     }
 
-    public Account(String username, float balance){
+    public Account(String username, double balance){
         this.accountNumber = genAccountNumber();
         this.username = username;
         this.balance = balance;
@@ -42,7 +42,7 @@ public class Account
         return username;
     }
 
-    public float getBalance(){
+    public double getBalance(){
         return balance;
     }
 
@@ -50,14 +50,14 @@ public class Account
         return checkout;
     }
 
-    public void setBalance(float balance){
+    public void setBalance(double balance){
         this.balance = balance;
     }
-    public void deposit(float deposit){
+    public void deposit(double deposit){
         this.balance = balance + deposit;
     }
 
-    public void withdraw(float withdrawal){
+    public void withdraw(double withdrawal){
         this.balance = balance - withdrawal;
     }
 
@@ -67,7 +67,7 @@ public class Account
         int randNum = tempNum + rand.nextInt(1000);
         accountNumbers.add(randNum);
 
-        for (int i = 0; i < accountsNumbers.size(); i++){
+        for (int i = 0; i < accountNumbers.size(); i++){
             if (randNum == accountNumbers.get(i)){
                 randNum = Integer.parseInt(genAccountNumber());
                 accountNumbers.add(randNum);
@@ -91,5 +91,7 @@ public class Account
         else if(account.getCheckOut() == 0){
             return false;
         }
+        
+        return false;
     }
 }
