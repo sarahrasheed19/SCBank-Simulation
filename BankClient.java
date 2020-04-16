@@ -1,4 +1,3 @@
-
 /**
  * BankClient.java is the client file for the BankSimulation. Client would be able to interact with the server.
  *
@@ -32,16 +31,31 @@ public class BankClient implements Serializable
             System.out.println("Client");
 
             while((outMessage = (Message)in.readObject()) != null){
+               
                 System.out.println("Server: " + outMessage.getMessage());
-                if(outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.")){
-                  username = scan.nextLine();
-                }
-                else if(outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password.")){
-                  String password = scan.nextLine();
-                }
-
                 fromUser = stdIn.readLine();
-                if(fromUser != null && fromUser.equals("4")){
+/*                if(outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.")){
+                  username = fromUser;
+                  
+                  System.out.println(username + ": " + fromUser);
+                  outMessage = new Message(username, fromUser);
+
+                  out.writeObject(outMessage);
+                  out.reset();
+                }
+                else if(outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password.") && username != null){
+                  String password = fromUser;
+                  
+                  System.out.println(username + ": " + password);
+                  outMessage = new Message(username, password);
+
+                  out.writeObject(outMessage);
+                  out.reset();
+                }
+*/
+   
+                if(fromUser != null && (fromUser != "4" || outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.") 
+                || outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password."))){
                   System.out.println(username + ": " + fromUser);
                   outMessage = new Message(username, fromUser);
 
