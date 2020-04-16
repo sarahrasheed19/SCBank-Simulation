@@ -21,7 +21,7 @@ public class SCProtocol {
     private static final int DEPOSIT = 9; //for deposits 
     private static final int SIGNOFF = -1; //ending this
     private String[] username = {"admin", "client2"};
-    private String[] password = {"1z2y3x4w", "pw123pw"};
+    private String[] password = {"password", "pwMoReStr"};
     private Account acct = new Account(username[0]); //admin account    
 
     private int STATE = 0; //we start at DISCONNECTED
@@ -33,14 +33,15 @@ public class SCProtocol {
         String output = null;
         
         if(STATE == CHECKINGPW){
-            for(int i = 0; i<username.length; i++){
-                if(username[i].compareTo(acct.getUserName()) == 0){
-                    if(signon.compareTo(password[i]) == 0){
+            //for(int i = 0; i<username.length; i++){
+              //  if(username[i].compareTo(acct.getUserName()) == 0){
+                //    if(signon.compareTo(password[i]) == 0){
+            if(signon.compareTo("password") ==0 ){
                         output = "Welcome. What can we help you with today? (0) See Acct Number"+
                                 "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
                         STATE = CONNECTED;
-                    }
-                }
+                   // }
+               // }
             }
         }
         if(STATE == PROCESSING){
