@@ -31,20 +31,7 @@ public class SCProtocol {
     //parameter is a String
     public String processInput(String signon) {
         String output = null;
-
-        if(STATE == DISCONNECTED){ //prompt user input username
-            output = "Welcome to Sarah & Carina Bank Incorporated! Please enter your username.";
-            STATE = PROCESSING;
-        }
-        if(STATE == PROCESSING){
-            if(signon.compareTo(acct.getUserName()) == 0){
-                output = "Welcome back " + signon + ". Please enter your password.";
-                STATE = CHECKINGPW;
-            } else {
-                output = "Invalid username! Try again.";
-                STATE = DISCONNECTED;
-            }
-        }
+        
         if(STATE == CHECKINGPW){
             for(int i = 0; i<username.length; i++){
                 if(username[i].compareTo(acct.getUserName()) == 0){
@@ -56,7 +43,19 @@ public class SCProtocol {
                 }
             }
         }
-
+        if(STATE == PROCESSING){
+            if(signon.compareTo(acct.getUserName()) == 0){
+                output = "Welcome back " + signon + ". Please enter your password.";
+                STATE = CHECKINGPW;
+            } else {
+                output = "Invalid username! Try again.";
+                STATE = DISCONNECTED;
+            }
+        }
+        if(STATE == DISCONNECTED){ //prompt user input username
+            output = "Welcome to Sarah & Carina Bank Incorporated! Please enter your username.";
+            STATE = PROCESSING;
+        }
         return output;
     }
 
@@ -64,7 +63,7 @@ public class SCProtocol {
  //now that we have the client connected, inputs will all be numerical
     public String processInput(float option){
         String output = null;
-
+        
         //this minimalist version is still using an account object
         //account object has acct number and balance 
         //so if user wants to see account number
