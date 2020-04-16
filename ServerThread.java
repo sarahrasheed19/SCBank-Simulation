@@ -21,11 +21,11 @@ public class ServerThread extends Thread
     }
     
     public void run() {
-        try {
+        try (
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             ObjectInputStream channelIn = new ObjectInputStream(sock.getInputStream());
             ObjectOutputStream channelOut = new ObjectOutputStream(sock.getOutputStream());
-        
+        ){
             String input, output;
             Message inBank, outBank;
             String name = "S&C Bank Inc.";

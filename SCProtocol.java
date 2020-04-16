@@ -21,7 +21,7 @@ public class SCProtocol {
     private static final int DEPOSIT = 9; //for deposits 
     private static final int SIGNOFF = -1; //ending this
     private String[] username = {"admin", "client2"};
-    private String[] password = {"1z2y3x4w", "pw123pw"};
+    private String[] password = {"password", "pwMoReStr"};
     private Account acct = new Account(username[0]); //admin account    
 
     private int STATE = 0; //we start at DISCONNECTED
