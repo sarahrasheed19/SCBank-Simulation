@@ -21,8 +21,8 @@ public class SCProtocol {
     private static final int DEPOSIT = 9; //for deposits 
     private static final int SIGNOFF = -1; //ending this
     private String[] username = {"admin", "client2"};
-    private String[] password = {"password", "pwMoReStr"};
-    private Account acct = new Account("admin", "123abc"); //admin account    
+    private String[] password = {"123abc", "pwMoReStr"};
+    private Account acct = new Account(username[0], password[0]); //admin account    
 
     private int STATE = 0; //we start at DISCONNECTED
 
@@ -31,9 +31,10 @@ public class SCProtocol {
     //parameter is a String
     public String processInput(String signon) {
         String output = null;
-        
+        //Once the username is validated, password has to be validated
         if(STATE == CHECKINGPW){
             System.out.println(signon);
+            //if password is valid, state changes to connected and we move to other processInput method
             if(signon.compareTo(acct.getPassword()) == 0){
                 output = "Welcome. What can we help you with today? \n(0) See Acct Number"+
                          "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
@@ -43,6 +44,7 @@ public class SCProtocol {
                 STATE = CHECKINGPW;
             }}
         }
+        //we are waiting for username here. Only options are to enter correct username or to exit.
         if(STATE == PROCESSING){
             if(signon.compareTo(acct.getUserName()) == 0){
                 output = "Welcome back " + signon + ". Please enter your password.";
@@ -52,6 +54,7 @@ public class SCProtocol {
                 STATE = PROCESSING;
             }}
         }
+        //this is where we start where we prompt for username
         if(STATE == DISCONNECTED){ //prompt user input username
             output = "Welcome to Sarah & Carina Bank Incorporated! Please enter your username.";
             STATE = PROCESSING;
@@ -65,6 +68,7 @@ public class SCProtocol {
         String output = null;
         if(STATE == WITHDRAW){
                 //check that the withdraw amount is not more than the account balance
+                //if the amount is greater than what they have, they'll be sent to main menu
                 if(option <= acct.getBalance()){
                     System.out.println("withdrawing");
                     acct.withdraw(option);
@@ -77,7 +81,7 @@ public class SCProtocol {
                              "(3) Deposit Money? (4) Sign Out?";
                     STATE = CONNECTED;
                 }}
-                //should we just have the account be in protocol? 
+                //if 4 is inputted anywhere, connection ends 
                 if(option == 4){
                     output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                     STATE = SIGNOFF;
@@ -85,7 +89,7 @@ public class SCProtocol {
                 } 
              } else {
                  if(STATE == DEPOSIT){
-                     //check that the withdraw amount is not more than the account balance
+                     //check that deposit is positive and if it isn't it's invalid and back to main menu
                      if(option > 0){
                         System.out.println("depositing");
                         acct.deposit(option);// send negative value to method that amends balance
@@ -98,7 +102,7 @@ public class SCProtocol {
                                  "(3) Deposit Money? (4) Sign Out?";
                         STATE = CONNECTED;
                     }}
-                    //should we just have the account be in protocol? 
+                    //if 4 is inputted anywhere, connection ends
                     if(option == 4){
                         output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                         STATE = SIGNOFF;
@@ -108,12 +112,10 @@ public class SCProtocol {
                 }
         }
         
-        //this minimalist version is still using an account object
-        //account object has acct number and balance 
-        //so if user wants to see account number
+        //this overwritten processInput method starts here at CONNECTED
+        //Options given when password is correct are processed here
         if(STATE == CONNECTED){
             if(option == 0) {
-                //readAcctNo and set it equal to output
                 output = "Your account number is: " + acct.getAccountNumber() +
                          "\nWould you like to: \n(1) See Acct Balance? (2) Withdraw Money? "+
                          "(3) Deposit Money? (4) Sign Out?";
@@ -135,7 +137,6 @@ public class SCProtocol {
             if(option == 4){
                 output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                 STATE = SIGNOFF;
-                //break;
             }
             
            
