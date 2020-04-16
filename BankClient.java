@@ -29,6 +29,7 @@ public class BankClient implements Serializable
             String fromUser;
             Message outMessage;
             Scanner scan = new Scanner(System.in);
+            System.out.println("Client");
 
             while((outMessage = (Message)in.readObject()) != null){
                 System.out.println("Server: " + outMessage.getMessage());
