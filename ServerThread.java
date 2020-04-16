@@ -37,13 +37,11 @@ public class ServerThread extends Thread
             outBank = new Message(name,output);
             channelOut.writeObject(outBank);
         
-            String check = "0123456789";    
-                    
             while((inBank = (Message)channelIn.readObject()) != null){
                 input = inBank.getMessage();
                 System.out.println(input);
               
-                if (check.contains(input)){
+                if (isNumber(input)){
                     output = exchange.processInput(Float.parseFloat(input));
                     outBank = new Message(name, output);
                     channelOut.writeObject(outBank);
@@ -65,7 +63,16 @@ public class ServerThread extends Thread
             sock.close();
         
         }catch (IOException e) {
+            System.out.println("Not able to find I/O Connection");
         } catch (ClassNotFoundException f){
         }
+    }
+    public static boolean isNumber(String in){
+        try{
+            Float.parseFloat(in);
+        } catch (NumberFormatException e){
+            return false;
+        }
+        return true;
     } 
 }

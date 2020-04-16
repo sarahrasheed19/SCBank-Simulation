@@ -5,7 +5,7 @@
 * 
 * Author: Carina Caraballo
 * Partner: Sarah Rasheed
-* Class: CSC453
+* Class: CSC450
 */
 
 import java.net.*;
@@ -22,7 +22,7 @@ public class SCProtocol {
     private static final int SIGNOFF = -1; //ending this
     private String[] username = {"admin", "client2"};
     private String[] password = {"password", "pwMoReStr"};
-    private Account acct = new Account(username[0]); //admin account    
+    private Account acct = new Account("admin", "123abc"); //admin account    
 
     private int STATE = 0; //we start at DISCONNECTED
 
@@ -33,25 +33,24 @@ public class SCProtocol {
         String output = null;
         
         if(STATE == CHECKINGPW){
-            //for(int i = 0; i<username.length; i++){
-              //  if(username[i].compareTo(acct.getUserName()) == 0){
-                //    if(signon.compareTo(password[i]) == 0){
-            if(signon.compareTo("password") ==0 ){
-                        output = "Welcome. What can we help you with today? (0) See Acct Number"+
-                                "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
-                        STATE = CONNECTED;
-                   // }
-               // }
-            }
+            System.out.println(signon);
+            if(signon.compareTo(acct.getPassword()) == 0){
+                output = "Welcome. What can we help you with today? \n(0) See Acct Number"+
+                         "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
+                STATE = CONNECTED;               
+            } else { if(signon.compareTo(acct.getPassword()) != 0) { 
+                output = "Wrong Password! Please enter valid password or (4) to exit.";
+                STATE = CHECKINGPW;
+            }}
         }
         if(STATE == PROCESSING){
             if(signon.compareTo(acct.getUserName()) == 0){
                 output = "Welcome back " + signon + ". Please enter your password.";
                 STATE = CHECKINGPW;
-            } else {
-                output = "Invalid username! Try again.";
-                STATE = DISCONNECTED;
-            }
+            } else { if(signon.compareTo(acct.getUserName()) != 0){
+                output = "Invalid username! Try again or (4) to exit.";
+                STATE = PROCESSING;
+            }}
         }
         if(STATE == DISCONNECTED){ //prompt user input username
             output = "Welcome to Sarah & Carina Bank Incorporated! Please enter your username.";
@@ -64,6 +63,50 @@ public class SCProtocol {
  //now that we have the client connected, inputs will all be numerical
     public String processInput(float option){
         String output = null;
+        if(STATE == WITHDRAW){
+                //check that the withdraw amount is not more than the account balance
+                if(option <= acct.getBalance()){
+                    System.out.println("withdrawing");
+                    acct.withdraw(option);
+                    output = "Your remaining balance now is: " + acct.getBalance() +
+                             "\n Would you like to (2) Withdraw More Money? (3) Deposit Money? (4) Sign Out?";
+                    STATE = CONNECTED;
+                } else { if(option> acct.getBalance()){
+                    output = "ERROR: You don't have this much money" + acct.getUserName() + 
+                             "\nWould you like to: \n(1) See Acct Balance? (2) Withdraw Money? "+
+                             "(3) Deposit Money? (4) Sign Out?";
+                    STATE = CONNECTED;
+                }}
+                //should we just have the account be in protocol? 
+                if(option == 4){
+                    output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
+                    STATE = SIGNOFF;
+                    //break;
+                } 
+             } else {
+                 if(STATE == DEPOSIT){
+                     //check that the withdraw amount is not more than the account balance
+                     if(option > 0){
+                        System.out.println("depositing");
+                        acct.deposit(option);// send negative value to method that amends balance
+                        output = "Your balance is now: " + acct.getBalance() +
+                        "\nWould you like to (2) Withdraw Money? (3) Deposit More Money? (4) Sign Out?";
+                        STATE = CONNECTED;
+                    } else { if(option <= 0){
+                        output = "ERROR: INVALID DEPOSIT!" + 
+                                 "\nWould you like to: \n(1) See Acct Balance (2) Withdraw Money? "+
+                                 "(3) Deposit Money? (4) Sign Out?";
+                        STATE = CONNECTED;
+                    }}
+                    //should we just have the account be in protocol? 
+                    if(option == 4){
+                        output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
+                        STATE = SIGNOFF;
+                        //break;
+                    }
+            
+                }
+        }
         
         //this minimalist version is still using an account object
         //account object has acct number and balance 
@@ -72,13 +115,13 @@ public class SCProtocol {
             if(option == 0) {
                 //readAcctNo and set it equal to output
                 output = "Your account number is: " + acct.getAccountNumber() +
-                         "Would you like to (1) See Acct Balance (2) Withdraw Money? "+
+                         "\nWould you like to: \n(1) See Acct Balance? (2) Withdraw Money? "+
                          "(3) Deposit Money? (4) Sign Out?";
                 STATE = CONNECTED;
             }
             if(option == 1) {
                 output = "Your account balance is: " + acct.getBalance() +
-                         "Would you like to (2) Withdraw Money? (3) Deposit Money? (4) Sign Out?";
+                         "\nWould you like to: \n(2) Withdraw Money? (3) Deposit Money? (4) Sign Out?";
                 STATE = CONNECTED;
             }
             if(option == 2){
@@ -94,40 +137,10 @@ public class SCProtocol {
                 STATE = SIGNOFF;
                 //break;
             }
-        }
-        //here the program takes in the amount and makes the changes
-        if(STATE == WITHDRAW){
-            //check that the withdraw amount is not more than the account balance
-            if(option <= acct.getBalance()){
-                acct.withdraw(option);
-                output = "Your remaining balance now is: " + acct.getBalance() +
-                         ". Would you like to (2) Withdraw More Money? (3) Deposit Money? (4) Sign Out?";
-                STATE = CONNECTED;
-            }
-            //should we just have the account be in protocol? 
-            if(option == 4){
-                output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
-                STATE = SIGNOFF;
-                //break;
-            }
-        }
-
-        if(STATE == DEPOSIT){
-            //check that the withdraw amount is not more than the account balance
-            if(option > 0){
-                acct.deposit(option);// send negative value to method that amends balance
-                output = "Your balance is now: " + acct.getBalance() +
-                ". Would you like to (2) Withdraw Money? (3) Deposit More Money? (4) Sign Out?";
-            }
-            //should we just have the account be in protocol? 
-            if(option == 4){
-                output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
-                STATE = SIGNOFF;
-                //break;
-            }
-        }
-
+            
+           
+        } 
+        
         return output;
     }
 }
- 

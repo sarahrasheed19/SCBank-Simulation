@@ -1,4 +1,3 @@
-
 /**
  * Account.java contains the object used for messaging between client and server.
  *
@@ -14,22 +13,25 @@ public class Account
 {
     public String accountNumber;
     public String username;
+    private String password;
     public double balance;
     public int checkout = 0;
 
     private int tempNum = 1000;
     private ArrayList<Integer> accountNumbers = new ArrayList<Integer>();
 
-    public Account(String username){
+    public Account(String username, String password){
         this.accountNumber = genAccountNumber();
         this.username = username;
+        this.password = password;
         this.balance = 1000;
         this.checkout = checkout;
     }
 
-    public Account(String username, double balance){
+    public Account(String username, String password, double balance){
         this.accountNumber = genAccountNumber();
         this.username = username;
+        this.password = password;
         this.balance = balance;
         this.checkout = checkout;
     }
@@ -40,6 +42,10 @@ public class Account
 
     public String getUserName(){
         return username;
+    }
+ 
+    public String getPassword(){
+        return password;
     }
 
     public double getBalance(){
@@ -53,6 +59,11 @@ public class Account
     public void setBalance(double balance){
         this.balance = balance;
     }
+
+    public void setPassword(String pw){
+        this.password = pw;
+    }
+
     public void deposit(double deposit){
         this.balance = balance + deposit;
     }
