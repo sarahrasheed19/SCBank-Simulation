@@ -34,26 +34,27 @@ public class BankClient implements Serializable
             while((outMessage = (Message)in.readObject()) != null){
                
                 System.out.println("Server: " + outMessage.getMessage());
+                fromUser = stdIn.readLine();
                 if(outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.")){
-                  username = stdIn.readLine();
+                  username = fromUser;
                   
-                  System.out.println(username + ": " + username);
-                  outMessage = new Message(username, username);
+                  System.out.println(username + ": " + fromUser);
+                  outMessage = new Message(username, fromUser);
 
-                  out.writeObject(outMessage);
+                  //out.writeObject(outMessage);
                   out.reset();
                 }
                 else if(outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password.") && username != null){
-                  String password = stdIn.readLine();
+                  String password = fromUser;
                   
                   System.out.println(username + ": " + password);
                   outMessage = new Message(username, password);
 
-                  out.writeObject(outMessage);
+                  //out.writeObject(outMessage);
                   out.reset();
                 }
 
-                fromUser = stdIn.readLine();
+   
                 if(fromUser != null && (fromUser != "4" || outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.") 
                 || outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password."))){
                   System.out.println(username + ": " + fromUser);
