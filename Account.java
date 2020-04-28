@@ -52,7 +52,7 @@ public class Account
         return balance;
     }
 
-    public int getCheckOut(){
+    public synchronized int getCheckOut(){
         return checkout;
     }
 
@@ -88,15 +88,15 @@ public class Account
         return Integer.toString(randNum);
     }
 
-    public void signIn(Account account){
+    public synchronized void signIn(Account account){
         this.checkout = 1;
     }
 
-    public void signOut(Account account){
+    public synchronized void signOut(Account account){
         this.checkout = 0;
     }
 
-    public boolean ifSignedIn(Account account){
+    public synchronized boolean ifSignedIn(Account account){
         boolean ifSignedIn = true;
        
         if(account.getCheckOut() == 1){

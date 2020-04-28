@@ -36,6 +36,7 @@ public class SCProtocol {
             System.out.println(signon);
             //if password is valid, state changes to connected and we move to other processInput method
             if(signon.compareTo(acct.getPassword()) == 0){
+                acct.signIn(acct);
                 output = "Welcome. What can we help you with today? \n(0) See Acct Number"+
                          "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
                 STATE = CONNECTED;               
@@ -47,8 +48,13 @@ public class SCProtocol {
         //we are waiting for username here. Only options are to enter correct username or to exit.
         if(STATE == PROCESSING){
             if(signon.compareTo(acct.getUserName()) == 0){
-                output = "Welcome back " + signon + ". Please enter your password.";
-                STATE = CHECKINGPW;
+                if(!acct.isSignedIn(acct)){
+                    output = "Welcome back " + signon + ". Please enter your password.";
+                    STATE = CHECKINGPW;
+                } else{ if (acct.isSignedIn(acct)){
+                        output = "Error: Account in use! Please try again later. " ;
+                        STATE = DISCONNECTED;
+                }}
             } else { if(signon.compareTo(acct.getUserName()) != 0){
                 output = "Invalid username! Try again or (4) to exit.";
                 STATE = PROCESSING;
@@ -83,6 +89,7 @@ public class SCProtocol {
                 }}
                 //if 4 is inputted anywhere, connection ends 
                 if(option == 4){
+                    acct.signOut(acct);
                     output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                     STATE = SIGNOFF;
                     //break;
@@ -104,6 +111,7 @@ public class SCProtocol {
                     }}
                     //if 4 is inputted anywhere, connection ends
                     if(option == 4){
+                        acct.signOut(acct);
                         output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                         STATE = SIGNOFF;
                         //break;
@@ -135,9 +143,11 @@ public class SCProtocol {
                 STATE = DEPOSIT;
             }
             if(option == 4){
+                acct.signOut(acct);
                 output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                 STATE = SIGNOFF;
             }
+
             
            
         } 
