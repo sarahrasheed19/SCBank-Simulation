@@ -25,7 +25,6 @@ public class Account
         this.username = username;
         this.password = password;
         this.balance = 1000;
-        this.checkout = checkout;
     }
 
     public Account(String username, String password, double balance){
@@ -33,7 +32,6 @@ public class Account
         this.username = username;
         this.password = password;
         this.balance = balance;
-        this.checkout = checkout;
     }
 
     public String getAccountNumber(){

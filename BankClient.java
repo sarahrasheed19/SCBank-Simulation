@@ -8,11 +8,16 @@
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
+
 
 public class BankClient implements Serializable
 {
-    public static void main(String[] args) throws IOException{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6475723174937998367L;
+
+	public static void main(String[] args) throws IOException{
 
         String hostname = "localhost";
         int portnumber = 5555;
@@ -27,7 +32,6 @@ public class BankClient implements Serializable
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             String fromUser;
             Message outMessage;
-            Scanner scan = new Scanner(System.in);
             System.out.println("Client");
 
             while((outMessage = (Message)in.readObject()) != null){
