@@ -12,9 +12,7 @@ import java.net.*;
 
 public class BankClient implements Serializable
 {
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -6475723174937998367L;
 
 	public static void main(String[] args) throws IOException{

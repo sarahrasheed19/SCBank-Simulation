@@ -32,7 +32,6 @@ public class ServerThread extends Thread
             
             SCProtocol exchange = new SCProtocol();
             //good up to here
-
             output = exchange.processInput(null);
             outBank = new Message(name,output);
             channelOut.writeObject(outBank);

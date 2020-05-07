@@ -10,10 +10,9 @@ import java.io.*;
 
 public class Message implements Serializable
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    
+	private static final long serialVersionUID = 3844699835374897747L;
+	
 	
 	// instance variables - replace the example below with your own
     private String sender;
