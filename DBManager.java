@@ -39,16 +39,18 @@ public class DBManager
 	//checks if the user name is valid
 	public boolean usernameExists(String user) {
 		//here I'll make an SQL query that checks for user existing
+		Boolean bool = false;
+		sql = "SELECT username " + 
+		      "FROM clients ";
 		try {
-			PreparedStatement st = db.prepareStatement("SELECT * FROM clients WHERE username = ?");
-			st.setString(1, user);
-			ResultSet rs = st.executeQuery(); //good up to here
-			while (rs.next())
-			{
-			    System.out.print("Column 4 returned ");
-			    rs.getString(4);
-			}
-			return (result.compareTo(user) == 0);
+			ResultSet rs = stmt.executeQuery(sql); //good up to here
+			while (rs.next()) {
+	            result = rs.getString("username");  
+	            if((result.trim()).compareTo(user) == 0) {
+	            	bool = true;
+	            }
+	        }
+			return bool;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Invalid Username.");
@@ -58,11 +60,15 @@ public class DBManager
 	//checks if the password is correct
 	public boolean passwordCorrect(String pw) {
 		//checking if the password is correct for the user name saved up there
-		sql = "SELECT password FROM clients WHERE username =\'" + result + "\';";
+		sql = "SELECT password FROM clients WHERE username ='?'";
 		try {
-			ResultSet rs = stmt.executeQuery(sql);
-			result = rs.getString("password");
-			return (result.compareTo(md5hash(pw)) == 0);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, pw);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result = rs.getString("password");
+			}
+			return ((result.trim()).compareTo(md5hash(pw)) == 0);
 		} catch (SQLException e) {
 			System.out.println("ERROR");
 			return false;
@@ -95,11 +101,22 @@ public class DBManager
 	
 	//message to check on checkout value of account by user name
 	public int isSignedIn(String username) {
-		sql = "SELECT * FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = \'"+username+"\';";
+		sql = "SELECT checkout FROM main WHERE username = '?'";
 		try {
-			ResultSet rs = stmt.executeQuery(sql);
-			checked = rs.getInt("checkout");
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			System.out.println("Checking SO 1");
+			pstmt.setString(1, username);
+			System.out.println("Checking SO 2");
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				checked = rs.getInt("checkout");
+				String non = rs.getString("username");
+				System.out.println(non);
+	        }
+			
 			return (checked);
+			
 		} catch (SQLException e) {
 			System.out.println("ERROR");
 			return 9;
@@ -108,13 +125,15 @@ public class DBManager
 	
 	public void changeCO(String username) {
 		if (isSignedIn(username)==0) {
-			sql = "UPDATE main SET checkout = 1 WHERE username = \'"+username+"\';";
+			sql = "UPDATE main SET checkout = 1 WHERE username = '?'";
 			
 		} else {
-			sql = "UPDATE main SET checkout = 0 WHERE username = \'"+username+"\';";
+			sql = "UPDATE main SET checkout = 0 WHERE username = '?'";
 			}
 		try {
-			stmt.executeUpdate(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, username);
+			pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
 			System.out.println("UPDATE CHECKOUT FAILED");
@@ -123,9 +142,11 @@ public class DBManager
 	}
 	
 	public float getBalance(String username) {
-		sql = "SELECT acctBalance FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = \'"+username+"\';";
+		sql = "SELECT acctBalance FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = '?')";
 		try {
-			ResultSet rs = stmt.executeQuery(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
 			acctBalance = rs.getFloat("acctBalance");
 			return acctBalance;
 		} catch (SQLException e) {
@@ -135,9 +156,11 @@ public class DBManager
 	}
 	
 	public float getAccountNumber(String username) {
-		sql = "SELECT acctNumber FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = \'"+username+"\';";
+		sql = "SELECT acctNumber FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = '?')";
 		try {
-			ResultSet rs = stmt.executeQuery(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
 			acctID = rs.getInt("acctNumber");
 			return acctID;
 		} catch (SQLException e) {
@@ -147,9 +170,11 @@ public class DBManager
 	}
 	
 	public void deposit(String username, float amt) {
-		sql = "UPDATE main SET acctBalance = acctBalance + amt WHERE username = \'"+username+"\';";
+		sql = "UPDATE main SET acctBalance = acctBalance + amt WHERE username = '?'";
 		try {
-			stmt.executeUpdate(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, username);
+			pstmt.executeUpdate();
 			db.commit();
 		} catch (SQLException e1) {
 			System.out.println("DEPOSIT FAILED");
@@ -159,9 +184,12 @@ public class DBManager
 	}
 	
 	public void withdraw(String username, float amt) {
-		sql = "UPDATE main SET acctBalance = acctBalance - amt WHERE username = \'"+username+"\';";
+		sql = "UPDATE main SET acctBalance = acctBalance - ? WHERE username = '?'";
 		try {
-			stmt.executeUpdate(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setFloat(1, amt);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
 			db.commit();
 		} catch (SQLException e1) {
 			System.out.println("WITHDRAW FAILED");
@@ -179,10 +207,15 @@ public class DBManager
 	}
 	
 	public void createAcct(String un, String pw, String first, String last, float bal) {
-		sql = "INSERT INTO main(username, password, fname, lname, acctBalance) "
-				+ "VALUES (un, pw, first, last, bal);";
+		sql = "INSERT INTO main(username, password, fname, lname, acctBalance) VALUES (?, ?, ?, ?, ?);";
 		try {
-			stmt.executeUpdate(sql);
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, un);
+			pstmt.setString(2, pw);
+			pstmt.setString(3, first);
+			pstmt.setString(4, last);
+			pstmt.setFloat(5, bal);
+			pstmt.executeUpdate();
 			db.commit();
 		} catch (SQLException e) {
 			System.out.println("Account Creation Failed.");
