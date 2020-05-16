@@ -47,6 +47,19 @@ Database After Creating an Account:
   <img src="/Screenshots/Users_Database_After.JPG">
 </p>
 
+Transferring Money:
+<p align="center">
+  <img src="/Screenshots/ATMTransferScreen.png">
+</p>
+Before:
+<p align="center">
+  <img src="/Screenshots/BeforeTransfer.png">
+</p>
+After:
+<p align="center">
+  <img src="/Screenshots/AfterTransfer.png">
+</p>
+
 Special Cases:
 
 - Invalid Username and Password:
