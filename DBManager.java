@@ -39,7 +39,7 @@ public class DBManager
 	public boolean usernameExists(String user) {
 		//here I'll make an SQL query that checks for user existing
 		Boolean bool = false;
-		sql = "SELECT username FROM clients WHERE username = ? ";
+		sql = "SELECT username FROM main WHERE username = ? ";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, user);
@@ -62,7 +62,7 @@ public class DBManager
 	//checks if the password is correct
 	public boolean passwordCorrect(String pw, String username) {
 		//checking if the password is correct for the user name saved up there
-		sql = "SELECT password FROM clients WHERE password = crypt(?, password)";
+		sql = "SELECT password FROM main WHERE password = crypt(?, password)";
 		Boolean lol = false;
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
@@ -148,7 +148,7 @@ public class DBManager
 	}
 	
 	public float getBalance(String username) {
-		sql = "SELECT acctBalance FROM main WHERE client_id = (SELECT id FROM clients WHERE username = ?)";
+		sql = "SELECT acctBalance FROM main WHERE username = ?";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, username);
@@ -164,13 +164,15 @@ public class DBManager
 	}
 	
 	public int getAccountNumber(String username) {
-		sql = "SELECT acctnumber FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = ?)";
+		sql = "SELECT acctno FROM main WHERE username = ?";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
+			System.out.println("Acct NUMBER");
 			while(rs.next()) {
-				acctID = rs.getInt("acctNumber");
+				acctID = rs.getInt("acctno");
+				
 			}
 			return acctID;
 		} catch (SQLException e) {
@@ -211,10 +213,22 @@ public class DBManager
 	
 	//basic transfer method from one account holder to another
 	public void transfer(String sender, String receiver, float amt) {
-		//first remove amount from the sender's account
-		withdraw(sender, amt);
-		//then add it to the receiver's account
-		deposit(receiver, amt);
+		sql = "UPDATE main SET acctBalance = acctBalance + ? WHERE username = ?";
+		String sql2 = "UPDATE main SET acctBalance = acctBalance - ? WHERE username = ?";
+
+		try {
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			PreparedStatement send = db.prepareStatement(sql2);
+			pstmt.setFloat(1, amt);
+			pstmt.setString(2, receiver);
+			send.setFloat(1,amt);
+			send.setString(2, sender);
+			send.executeUpdate();
+			pstmt.executeUpdate();
+		} catch (SQLException e1) {
+			System.out.println("TRANSFER FAILED");
+			e1.printStackTrace();
+		}
 	}
 	
 	public void createAcct(String un, String pw, String first, String last, float bal) {

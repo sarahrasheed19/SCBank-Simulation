@@ -20,7 +20,7 @@ public class SCProtocol {
     private static final int CREATEACCT = 4; //
     private static final int WITHDRAW = 8; //withdraw mode
     private static final int DEPOSIT = 9; //for deposits 
-    private static final int TRANSFER = 10;
+    private static final int TRANSFER = 6;
     private static final int SIGNOFF = -1; //ending this
     public DBManager dbMan = new DBManager("SCBank", "123pass"); //db with our account information
     public static int count = 3;
@@ -38,6 +38,18 @@ public class SCProtocol {
     public String processInput(String signon) {
         String output = null;
         //Once the user name is validated, password has to be validated
+        if(STATE == TRANSFER) {
+        	if(dbMan.isSignedIn(signon)==0){
+            	dbMan.transfer(username, signon, trans);
+            	output = "Transfer complete! What would you like to do next?" + 
+            			"(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Transfer More Money (5) Sign Out";
+        	} else {
+        		output = "Account busy. Transfer not possible. What would you like to do next? "+ 
+        				"(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Transfer More Money (5) Sign Out";
+        	}
+        	STATE = CONNECTED;
+        }
+        
         if(STATE == CREATEACCT) {
        
         	if(count == 0) {
@@ -90,8 +102,8 @@ public class SCProtocol {
                     output = "Welcome back " + username + ". Please enter your password.";
                     STATE = CHECKINGPW;
                 } else{ 
-                        output = "Error: Account in use! Please try again later. " ;
-                        STATE = DISCONNECTED;
+                	output = "Error: Account in use! Please try again later. " ;
+                	STATE = DISCONNECTED;
                 }
             } else { 
                 output = "Invalid username! Try again or (5) to exit.";
@@ -105,13 +117,9 @@ public class SCProtocol {
             		 "enter 7.";
             STATE = PROCESSING;
         }
+        System.out.println("walking my way downtown");
         
-        if(STATE == TRANSFER) {
-        	dbMan.transfer(username, signon, trans);
-        	output = "Transfer complete! What would you like to do next?" + 
-        			"(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Transfer More Money (5) Sign Out";
-        	STATE = CONNECTED;
-        }
+        
         return output;
     }
 
@@ -122,6 +130,7 @@ public class SCProtocol {
         System.out.println(option);
         System.out.println("state: "+ STATE);
         
+    
         
         if(STATE == WITHDRAW){
                 //check that the withdraw amount is not more than the account balance
@@ -145,8 +154,8 @@ public class SCProtocol {
                     STATE = SIGNOFF;
                     //break;
                 } 
-             } else {
-                 if(STATE == DEPOSIT){
+        } else {
+        	if(STATE == DEPOSIT){
                      //check that deposit is positive and if it isn't it's invalid and back to main menu
                      if(option > 0){
                         System.out.println("depositing");
@@ -168,16 +177,20 @@ public class SCProtocol {
                         //break;
                     }
             
+                }else {
+                	if(STATE == TRANSFER) {
+                   		if (option > 0 && option < dbMan.getBalance(username)) {
+                   			trans = option;
+                   			System.out.println("TRANS = " + trans);
+                  			output = "Please enter username of user you'd like to send money to.";
+                   			STATE = TRANSFER;
+                   		}
+                   	}
                 }
-                if(STATE == TRANSFER) {
-               		if (option > 0 && option < dbMan.getBalance(username)) {
-               			trans = option;
-              			output = "Please enter username of user you'd like to send money to.";
-               			STATE = TRANSFER;
-               		}
-               	}
                 
-        }
+        } 
+        
+        
         
         //this overwritten processInput method starts here at CONNECTED
         //Options given when password is correct are processed here
@@ -213,6 +226,7 @@ public class SCProtocol {
            
         } 
         
+        
         if(STATE == CREATEACCT) {
         	initdep = option;
         	dbMan.createAcct(unsql, pwsql, fname, lname, initdep);
@@ -226,6 +240,8 @@ public class SCProtocol {
         		STATE = CREATEACCT;
         	}
         }
+        
+        
         
         return output;
     }

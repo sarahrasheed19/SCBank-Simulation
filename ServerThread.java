@@ -55,10 +55,10 @@ public class ServerThread extends Thread
                     channelOut.writeObject(outBank);
                 }
                 //if at any time the input is 4, connection is ended
-                if (input.equals("4")){
+              /*  if (input.equals("4")){
                     System.out.println("Thank you for banking with Sarah and Carina Bank Incorporated!");
                     break;
-                }
+                }*/
                 
             }
             channelIn.close();
