@@ -80,12 +80,15 @@ Special Cases:
 ## Issues and Solutions:
 
 ### Issues:
-- Difficulty Implementing Frontend (Web Application)
-- Using Client Input (.html) to Manipulate the Database
+- Difficulty implementing frontend (Web Application)
+- Using client input (.html) to manipulate the database
+- Database not available remotely
 
 ### Solutions:
 - Not use a web application
 - Use the console to input information and view output
 
 ## What would we have done if we had more time? (Conclusion)
-We could've possibly switched to a Python based application because of the ease of using Python web applications. We also would've added more functionalities like paying bills, making payment requests to other bank users, etc.
+- Switched to a Python based application because of the ease of using Python web applications.
+- Added more functionalities like paying bills, making payment requests to other bank users, etc.
+- Fixing the database to work remotely
