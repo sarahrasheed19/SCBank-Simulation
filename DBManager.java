@@ -1,14 +1,12 @@
 //This class will serve to connect and interact with the database SCBank
 
 import java.sql.*;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 
 public class DBManager 
 {
 	private Connection db;
-	private Statement stmt;
+	//private Statement stmt;
 	private String result = null;
 	private String sql = null;
 	private int checked = 0;
@@ -24,7 +22,7 @@ public class DBManager
 			System.out.println("Driver is set; ready to go!");
 			db = DriverManager.getConnection(url, username, password);
 			System.out.println("DONE");
-			stmt = db.createStatement();
+			//stmt = db.createStatement();
 			} 
 		
 		catch (ClassNotFoundException e){
@@ -36,19 +34,22 @@ public class DBManager
 			
           }
 	}
+	//function correct -- debugged
 	//checks if the user name is valid
 	public boolean usernameExists(String user) {
 		//here I'll make an SQL query that checks for user existing
 		Boolean bool = false;
-		sql = "SELECT username " + 
-		      "FROM clients ";
+		sql = "SELECT username FROM clients WHERE username = ? ";
 		try {
-			ResultSet rs = stmt.executeQuery(sql); //good up to here
+			PreparedStatement pstmt = db.prepareStatement(sql);
+			pstmt.setString(1, user);
+			ResultSet rs = pstmt.executeQuery(); //good up to here
 			while (rs.next()) {
 	            result = rs.getString("username");  
 	            if((result.trim()).compareTo(user) == 0) {
 	            	bool = true;
 	            }
+	            System.out.println(result);
 	        }
 			return bool;
 		} catch (SQLException e) {
@@ -57,24 +58,29 @@ public class DBManager
 			return false;
 		}
 	}
+	//debugged so far
 	//checks if the password is correct
-	public boolean passwordCorrect(String pw) {
+	public boolean passwordCorrect(String pw, String username) {
 		//checking if the password is correct for the user name saved up there
-		sql = "SELECT password FROM clients WHERE username ='?'";
+		sql = "SELECT password FROM clients WHERE password = crypt(?, password)";
+		Boolean lol = false;
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, pw);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result = rs.getString("password");
+				System.out.println(result);
+				lol = true;
+				
 			}
-			return ((result.trim()).compareTo(md5hash(pw)) == 0);
+			return lol;
 		} catch (SQLException e) {
 			System.out.println("ERROR");
 			return false;
 		}
 	}
-	
+	/*
 	//creating md5 hash of password entered to compare to hash of user password
 	//that is saved in the database
 	public String md5hash(String pw) {
@@ -97,22 +103,21 @@ public class DBManager
 			e.printStackTrace();
 		}
 		return md5PW;
-	}
+	}*/
 	
+	
+	
+	//method debugged -- connects to db successfully
 	//message to check on checkout value of account by user name
 	public int isSignedIn(String username) {
-		sql = "SELECT checkout FROM main WHERE username = '?'";
+		sql = "SELECT checkout FROM main WHERE username = ?";
 		try {
-			PreparedStatement pstmt = db.prepareStatement(sql);
-			System.out.println("Checking SO 1");
-			pstmt.setString(1, username);
-			System.out.println("Checking SO 2");
-			ResultSet rs = pstmt.executeQuery();
-			
+			PreparedStatement pstmt2 = db.prepareStatement(sql);
+			pstmt2.setString(1, username);
+			ResultSet rs = pstmt2.executeQuery();
+
 			while (rs.next()) {
 				checked = rs.getInt("checkout");
-				String non = rs.getString("username");
-				System.out.println(non);
 	        }
 			
 			return (checked);
@@ -123,13 +128,14 @@ public class DBManager
 		}
 	}
 	
+	
 	public void changeCO(String username) {
 		if (isSignedIn(username)==0) {
-			sql = "UPDATE main SET checkout = 1 WHERE username = '?'";
+			sql = "UPDATE main SET checkout = 1 WHERE username = ?";
 			
 		} else {
-			sql = "UPDATE main SET checkout = 0 WHERE username = '?'";
-			}
+			sql = "UPDATE main SET checkout = 0 WHERE username = ?";
+		}
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, username);
@@ -142,12 +148,14 @@ public class DBManager
 	}
 	
 	public float getBalance(String username) {
-		sql = "SELECT acctBalance FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = '?')";
+		sql = "SELECT acctBalance FROM main WHERE client_id = (SELECT id FROM clients WHERE username = ?)";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
-			acctBalance = rs.getFloat("acctBalance");
+			while(rs.next()) {
+				acctBalance = rs.getFloat("acctBalance");
+			}
 			return acctBalance;
 		} catch (SQLException e) {
 			System.out.println("ERROR");
@@ -155,27 +163,31 @@ public class DBManager
 		}
 	}
 	
-	public float getAccountNumber(String username) {
-		sql = "SELECT acctNumber FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = '?')";
+	public int getAccountNumber(String username) {
+		sql = "SELECT acctnumber FROM accounts WHERE client_id = (SELECT id FROM clients WHERE username = ?)";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
-			acctID = rs.getInt("acctNumber");
+			while(rs.next()) {
+				acctID = rs.getInt("acctNumber");
+			}
 			return acctID;
 		} catch (SQLException e) {
 			System.out.println("ERROR");
 			return -1;
 		}
 	}
+	//works up to here
+	
 	
 	public void deposit(String username, float amt) {
-		sql = "UPDATE main SET acctBalance = acctBalance + amt WHERE username = '?'";
+		sql = "UPDATE main SET acctBalance = acctBalance + ? WHERE username = ?";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
-			pstmt.setString(1, username);
+			pstmt.setFloat(1, amt);
+			pstmt.setString(2, username);
 			pstmt.executeUpdate();
-			db.commit();
 		} catch (SQLException e1) {
 			System.out.println("DEPOSIT FAILED");
 			e1.printStackTrace();
@@ -184,13 +196,12 @@ public class DBManager
 	}
 	
 	public void withdraw(String username, float amt) {
-		sql = "UPDATE main SET acctBalance = acctBalance - ? WHERE username = '?'";
+		sql = "UPDATE main SET acctBalance = acctBalance - ? WHERE username = ?";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setFloat(1, amt);
 			pstmt.setString(2, username);
 			pstmt.executeUpdate();
-			db.commit();
 		} catch (SQLException e1) {
 			System.out.println("WITHDRAW FAILED");
 			e1.printStackTrace();
@@ -207,7 +218,7 @@ public class DBManager
 	}
 	
 	public void createAcct(String un, String pw, String first, String last, float bal) {
-		sql = "INSERT INTO main(username, password, fname, lname, acctBalance) VALUES (?, ?, ?, ?, ?);";
+		sql = "INSERT INTO main(username, password, fname, lname, acctBalance) VALUES (?, crypt(?, gen_salt('md5')), ?, ?, ?);";
 		try {
 			PreparedStatement pstmt = db.prepareStatement(sql);
 			pstmt.setString(1, un);
@@ -216,7 +227,6 @@ public class DBManager
 			pstmt.setString(4, last);
 			pstmt.setFloat(5, bal);
 			pstmt.executeUpdate();
-			db.commit();
 		} catch (SQLException e) {
 			System.out.println("Account Creation Failed.");
 			e.printStackTrace();
