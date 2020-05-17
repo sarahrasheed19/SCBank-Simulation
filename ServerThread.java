@@ -1,7 +1,7 @@
 /**
  * ServerThread - receives input from the client and sends to protocol to
- * fetch bank response 
- * 
+ * fetch bank response
+ *
  * Author: Carina Caraballo
  * Partner: Sarah Rasheed
  */
@@ -9,17 +9,17 @@
 import java.net.*;
 import java.io.*;
 
-public class ServerThread extends Thread 
+public class ServerThread extends Thread
 {
     private Socket sock = null;
-    
+
     //constructor
     public ServerThread(Socket socket)
     {
         super("ServerThread");
         this.sock = socket;
     }
-    
+
     public void run() {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -29,15 +29,15 @@ public class ServerThread extends Thread
             String input, output;
             Message inBank, outBank;
             String name = "S&C Bank Inc.";
-            
+
             SCProtocol exchange = new SCProtocol();
             //good up to here
             output = exchange.processInput(null);
             outBank = new Message(name,output);
             channelOut.writeObject(outBank);
-        
+
             while((inBank = (Message)channelIn.readObject()) != null){
-                //input is always a string that has to be judged either as that or a float 
+                //input is always a string that has to be judged either as that or a float
                 input = inBank.getMessage();
                 System.out.println(input);
                 //input is sent to isNumber method to check if it's a float
@@ -59,12 +59,11 @@ public class ServerThread extends Thread
                     System.out.println("Thank you for banking with Sarah and Carina Bank Incorporated!");
                     break;
                 }*/
-                
             }
             channelIn.close();
             channelOut.close();
             sock.close();
-        
+
         }catch (IOException e) {
             System.out.println("Not able to find I/O Connection");
         } catch (ClassNotFoundException f){
@@ -78,5 +77,5 @@ public class ServerThread extends Thread
             return false;
         }
         return true;
-    } 
+    }
 }

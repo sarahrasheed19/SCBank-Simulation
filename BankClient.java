@@ -17,15 +17,20 @@ public class BankClient implements Serializable
 
 	public static void main(String[] args) throws IOException{
 
+        //hostname and portnumber to create the Socket
         String hostname = "localhost";
         int portnumber = 5555;
+
+        //basic username for Bank Client
         String username = "Bank Client";
 
         try(
+        //creates socket and input/output streams
             Socket socket = new Socket(hostname, portnumber);
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         )
+
           {
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             String fromUser;
@@ -33,24 +38,26 @@ public class BankClient implements Serializable
             System.out.println("Client");
 
             while((outMessage = (Message)in.readObject()) != null){
-               
-                System.out.println("Server: " + outMessage.getMessage());
-                fromUser = stdIn.readLine();
-   
-                if(fromUser != null && (fromUser != "4" || outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.") 
+
+                System.out.println("Server: " + outMessage.getMessage()); //prints the message from server
+                fromUser = stdIn.readLine(); //reads input from user
+
+                //if the input is anything but "4" and fromUser is not null, print and send the message to server
+                if(fromUser != null && (fromUser != "4" || outMessage.getMessage().equals("Welcome to Sarah & Carina Bank Incorporated! Please enter your username.")
                 || outMessage.getMessage().equals("Welcome back " + username + ". Please enter your password."))){
                   System.out.println(username + ": " + fromUser);
                   outMessage = new Message(username, fromUser);
 
                   out.writeObject(outMessage);
                   out.reset();
-                }
+                } //if input equals 4, break the loop
                 else if(fromUser.equals("4")){
                   break;
                 }
               }
             }
 
+        //exceptions
         catch(UnknownHostException e){
             System.err.println("Don't know about host ");
             System.exit(1);

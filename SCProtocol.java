@@ -1,8 +1,8 @@
 /* SCProtocol.java
-* 
-* This class is dedicating to calculating, based on client input, 
+*
+* This class is dedicating to calculating, based on client input,
 * what the bank's response will be.
-* 
+*
 * Author: Carina Caraballo
 * Partner: Sarah Rasheed
 * Class: CSC450
@@ -13,8 +13,8 @@
 
 public class SCProtocol {
 
-    private static final int DISCONNECTED = 0; //client and server are disconnected, no interaction yet 
-    private static final int CONNECTED = 1; //client is connected 
+    private static final int DISCONNECTED = 0; //client and server are disconnected, no interaction yet
+    private static final int CONNECTED = 1; //client is connected
     private static final int PROCESSING = 2; //machine checking username
     private static final int CHECKINGPW = 3; //machine checking password
     private static final int CREATEACCT = 4; //
@@ -28,7 +28,6 @@ public class SCProtocol {
     private float initdep = 0;
     private String username = null;
     private float trans = 0;
-   
 
     private int STATE = 0; //we start at DISCONNECTED
 
@@ -164,7 +163,7 @@ public class SCProtocol {
                         "\nWould you like to (2) Withdraw Money? (3) Deposit More Money? (4) Transfer Money (5) Sign Out?";
                         STATE = CONNECTED;
                     } else { if(option <= 0){
-                        output = "ERROR: INVALID DEPOSIT!" + 
+                        output = "ERROR: INVALID DEPOSIT!" +
                                  "\nWould you like to: \n(1) See Acct Balance (2) Withdraw Money? "+
                                  "(3) Deposit Money? (4) Transfer Money (5) Sign Out?";
                         STATE = CONNECTED;
@@ -176,7 +175,6 @@ public class SCProtocol {
                         STATE = SIGNOFF;
                         //break;
                     }
-            
                 }else {
                 	if(STATE == TRANSFER) {
                    		if (option > 0 && option < dbMan.getBalance(username)) {
@@ -189,9 +187,6 @@ public class SCProtocol {
                 }
                 
         } 
-        
-        
-        
         //this overwritten processInput method starts here at CONNECTED
         //Options given when password is correct are processed here
         if(STATE == CONNECTED){
@@ -240,9 +235,7 @@ public class SCProtocol {
         		STATE = CREATEACCT;
         	}
         }
-        
-        
-        
+
         return output;
     }
 }
