@@ -1,8 +1,8 @@
 /* SCProtocol.java
-* 
-* This class is dedicating to calculating, based on client input, 
+*
+* This class is dedicating to calculating, based on client input,
 * what the bank's response will be.
-* 
+*
 * Author: Carina Caraballo
 * Partner: Sarah Rasheed
 * Class: CSC450
@@ -13,16 +13,16 @@ import java.io.*;
 
 public class SCProtocol {
 
-    private static final int DISCONNECTED = 0; //client and server are disconnected, no interaction yet 
-    private static final int CONNECTED = 1; //client is connected 
+    private static final int DISCONNECTED = 0; //client and server are disconnected, no interaction yet
+    private static final int CONNECTED = 1; //client is connected
     private static final int PROCESSING = 2; //machine checking username
     private static final int CHECKINGPW = 3; //machine checking password
     private static final int WITHDRAW = 8; //withdraw mode
-    private static final int DEPOSIT = 9; //for deposits 
+    private static final int DEPOSIT = 9; //for deposits
     private static final int SIGNOFF = -1; //ending this
     private String[] username = {"admin", "client2"};
     private String[] password = {"123abc", "pwMoReStr"};
-    private Account acct = new Account(username[0], password[0]); //admin account    
+    private Account acct = new Account(username[0], password[0]); //admin account
 
     private int STATE = 0; //we start at DISCONNECTED
 
@@ -38,8 +38,8 @@ public class SCProtocol {
             if(signon.compareTo(acct.getPassword()) == 0){
                 output = "Welcome. What can we help you with today? \n(0) See Acct Number"+
                          "(1) See Acct Balance (2) Withdraw Money (3) Deposit Money (4) Sign Out";
-                STATE = CONNECTED;               
-            } else { if(signon.compareTo(acct.getPassword()) != 0) { 
+                STATE = CONNECTED;
+            } else { if(signon.compareTo(acct.getPassword()) != 0) {
                 output = "Wrong Password! Please enter valid password or (4) to exit.";
                 STATE = CHECKINGPW;
             }}
@@ -76,17 +76,17 @@ public class SCProtocol {
                              "\n Would you like to (2) Withdraw More Money? (3) Deposit Money? (4) Sign Out?";
                     STATE = CONNECTED;
                 } else { if(option> acct.getBalance()){
-                    output = "ERROR: You don't have this much money" + acct.getUserName() + 
+                    output = "ERROR: You don't have this much money" + acct.getUserName() +
                              "\nWould you like to: \n(1) See Acct Balance? (2) Withdraw Money? "+
                              "(3) Deposit Money? (4) Sign Out?";
                     STATE = CONNECTED;
                 }}
-                //if 4 is inputted anywhere, connection ends 
+                //if 4 is inputted anywhere, connection ends
                 if(option == 4){
                     output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                     STATE = SIGNOFF;
                     //break;
-                } 
+                }
              } else {
                  if(STATE == DEPOSIT){
                      //check that deposit is positive and if it isn't it's invalid and back to main menu
@@ -97,7 +97,7 @@ public class SCProtocol {
                         "\nWould you like to (2) Withdraw Money? (3) Deposit More Money? (4) Sign Out?";
                         STATE = CONNECTED;
                     } else { if(option <= 0){
-                        output = "ERROR: INVALID DEPOSIT!" + 
+                        output = "ERROR: INVALID DEPOSIT!" +
                                  "\nWould you like to: \n(1) See Acct Balance (2) Withdraw Money? "+
                                  "(3) Deposit Money? (4) Sign Out?";
                         STATE = CONNECTED;
@@ -108,10 +108,10 @@ public class SCProtocol {
                         STATE = SIGNOFF;
                         //break;
                     }
-            
+
                 }
         }
-        
+
         //this overwritten processInput method starts here at CONNECTED
         //Options given when password is correct are processed here
         if(STATE == CONNECTED){
@@ -138,10 +138,10 @@ public class SCProtocol {
                 output = "Thank you for banking with Sarah and Carina Bank Incorporated!";
                 STATE = SIGNOFF;
             }
-            
-           
-        } 
-        
+
+
+        }
+
         return output;
     }
 }

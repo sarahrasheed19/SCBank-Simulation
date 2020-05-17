@@ -22,7 +22,7 @@ public class Account
     private int tempNum = 1000;
     private ArrayList<Integer> accountNumbers = new ArrayList<Integer>();
 
-    //creates Accounr object with username and password as parameters. Default
+    //creates Account object with username and password as parameters. Default
     //balance is 1000
     public Account(String username, String password){
         this.accountNumber = genAccountNumber();
