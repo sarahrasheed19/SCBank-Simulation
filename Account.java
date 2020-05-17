@@ -29,7 +29,6 @@ public class Account
         this.username = username;
         this.password = password;
         this.balance = 1000;
-        this.checkout = checkout;
     }
 
     //creates Account object with username, password, and balance as parameters
@@ -38,7 +37,6 @@ public class Account
         this.username = username;
         this.password = password;
         this.balance = balance;
-        this.checkout = checkout;
     }
 
     //returns accountNumber
@@ -62,7 +60,7 @@ public class Account
     }
 
     //getCheckout() returns 1 or 0 for signedin status
-    public int getCheckOut(){
+    public synchronized int getCheckOut(){
         return checkout;
     }
 
@@ -106,18 +104,16 @@ public class Account
         return Integer.toString(randNum); //return this to the Account constructors for new objects
     }
 
-    //signs in client by making checkout = 1
-    public void signIn(Account account){
+
+    public synchronized void signIn(Account account){
         this.checkout = 1;
     }
 
-    //signs out client by making checkout = 0
-    public void signOut(Account account){
+    public synchronized void signOut(Account account){
         this.checkout = 0;
     }
 
-    //ifSignedin returns true or false based on checkout = 0 or = 1
-    public boolean ifSignedIn(Account account){
+    public synchronized boolean ifSignedIn(Account account){
         boolean ifSignedIn = true;
 
         if(account.getCheckOut() == 1){

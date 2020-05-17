@@ -9,9 +9,13 @@
 import java.io.*;
 import java.net.*;
 
+
 public class BankClient implements Serializable
 {
-    public static void main(String[] args) throws IOException{
+
+	private static final long serialVersionUID = -6475723174937998367L;
+
+	public static void main(String[] args) throws IOException{
 
         //hostname and portnumber to create the Socket
         String hostname = "localhost";
@@ -26,10 +30,12 @@ public class BankClient implements Serializable
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         )
-          { //try block
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in)); //stdIn reads in input
-            String fromUser; //String object for user input
-            Message outMessage; //Message object for messages coming from server
+
+          {
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+            String fromUser;
+            Message outMessage;
+            System.out.println("Client");
 
             while((outMessage = (Message)in.readObject()) != null){
 
